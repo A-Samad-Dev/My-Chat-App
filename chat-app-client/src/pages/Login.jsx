@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
@@ -27,6 +28,7 @@ const Login = () => {
 
     onSubmit: async (values) => {
       try {
+        setLoading(true);
         const res = await axios.post(
           "http://localhost:5000/api/auth/login",
           values,
@@ -38,6 +40,9 @@ const Login = () => {
         navigate("/chat");
       } catch (err) {
         setErrorMsg("Invalid credentials ❌");
+        setLoading(false);
+      }finally {
+        setLoading(false);
       }
     },
   });
@@ -96,7 +101,7 @@ const Login = () => {
           type="submit"
           className="bg-blue-600 text-white w-full py-3 rounded-lg mt-3 hover:bg-blue-700 transition"
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
 
         <p

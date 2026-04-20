@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 
 const Register = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [file, setFile] = useState(null); // 👈 FILE STATE
 
@@ -30,6 +31,8 @@ const Register = () => {
 
     onSubmit: async (values) => {
       try {
+        setLoading(true);
+
         const formData = new FormData();
 
         // append text fields
@@ -56,7 +59,10 @@ const Register = () => {
 
         setTimeout(() => navigate("/"), 2000);
       } catch (err) {
+        setLoading(false);
         console.log(err.response);
+      } finally {
+        setLoading(false);
       }
     },
   });
@@ -125,7 +131,7 @@ const Register = () => {
           type="submit"
           className="bg-blue-600 text-white w-full py-3 rounded-lg mt-2 hover:bg-blue-700"
         >
-          Sign Up
+          {loading ? "Creating account..." : "Register"}
         </button>
 
         <p
