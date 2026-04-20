@@ -48,7 +48,6 @@ const Register = () => {
           {
             headers: {
               "Content-Type": "multipart/form-data",
-              
             },
           },
         );
@@ -63,7 +62,7 @@ const Register = () => {
   });
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-blue-600">
+    <div className="h-screen flex items-center justify-center bg-linear-to-br from-indigo-500 to-blue-600">
       <button
         className="absolute top-0 left-1 text-2xl"
         onClick={() => navigate("/")}

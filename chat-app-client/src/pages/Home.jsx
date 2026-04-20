@@ -6,7 +6,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600">
+    <div className="h-screen flex items-center justify-center bg-linear-to-br from-blue-500 to-indigo-600">
       <div className="bg-white rounded-3xl shadow-xl p-10 w-[90%] max-w-md text-center animate-fadeIn">
         <h1 className="text-3xl font-bold text-gray-800 mb-3">Welcome 👋</h1>
 

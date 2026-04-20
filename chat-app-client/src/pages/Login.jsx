@@ -43,7 +43,7 @@ const Login = () => {
   });
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600">
+    <div className="h-screen flex items-center justify-center bg-linear-to-br from-blue-500 to-indigo-600">
       <button
         className="absolute top-0 left-1 text-2xl"
         onClick={() => navigate("/")}
