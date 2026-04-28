@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 const Register = () => {
   const navigate = useNavigate();
   const [successMsg, setSuccessMsg] = useState("");
-  const [file, setFile] = useState(null); // 👈 FILE STATE
+  const [file, setFile] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -43,12 +43,11 @@ const Register = () => {
         }
 
         const res = await axios.post(
-          "http://localhost:5000/api/auth/register",
+          `${import.meta.env.VITE_API_URL}/api/auth/register`,
           formData,
           {
             headers: {
               "Content-Type": "multipart/form-data",
-              
             },
           },
         );
@@ -63,9 +62,9 @@ const Register = () => {
   });
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-blue-600">
+    <div className="flex items-center justify-center h-screen bg-linear-to-br from-indigo-500 to-blue-600">
       <button
-        className="absolute top-0 left-1 text-2xl"
+        className="absolute top-0 text-2xl left-1"
         onClick={() => navigate("/")}
       >
         🏠 Home
@@ -74,9 +73,9 @@ const Register = () => {
         onSubmit={formik.handleSubmit}
         className="bg-white p-8 rounded-2xl shadow-xl w-[90%] max-w-md  dark:bg-black dark:text-white animate-fadeIn"
       >
-        <h2 className="text-2xl font-bold text-center mb-4">Create Account</h2>
+        <h2 className="mb-4 text-2xl font-bold text-center">Create Account</h2>
 
-        <small className="text-green-500 block text-center mb-3">
+        <small className="block mb-3 text-center text-green-500">
           {successMsg}
         </small>
 
@@ -87,9 +86,9 @@ const Register = () => {
           placeholder="Username"
           onChange={formik.handleChange}
           value={formik.values.username}
-          className="w-full mb-2 p-3 border rounded-lg"
+          className="w-full p-3 mb-2 border rounded-lg"
         />
-        <p className="text-red-500 text-xs mb-2">{formik.errors.username}</p>
+        <p className="mb-2 text-xs text-red-500">{formik.errors.username}</p>
 
         {/* Email */}
         <input
@@ -98,9 +97,9 @@ const Register = () => {
           placeholder="Email"
           onChange={formik.handleChange}
           value={formik.values.email}
-          className="w-full mb-2 p-3 border rounded-lg"
+          className="w-full p-3 mb-2 border rounded-lg"
         />
-        <p className="text-red-500 text-xs mb-2">{formik.errors.email}</p>
+        <p className="mb-2 text-xs text-red-500">{formik.errors.email}</p>
 
         {/* Password */}
         <input
@@ -109,9 +108,9 @@ const Register = () => {
           placeholder="Password"
           onChange={formik.handleChange}
           value={formik.values.password}
-          className="w-full mb-2 p-3 border rounded-lg"
+          className="w-full p-3 mb-2 border rounded-lg"
         />
-        <p className="text-red-500 text-xs mb-2">{formik.errors.password}</p>
+        <p className="mb-2 text-xs text-red-500">{formik.errors.password}</p>
 
         <div className="mb-3">
           <input
@@ -124,13 +123,13 @@ const Register = () => {
 
         <button
           type="submit"
-          className="bg-blue-600 text-white w-full py-3 rounded-lg mt-2 hover:bg-blue-700"
+          className="w-full py-3 mt-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
         >
           Sign Up
         </button>
 
         <p
-          className="text-center text-sm mt-4 cursor-pointer text-gray-500 hover:text-blue-600"
+          className="mt-4 text-sm text-center text-gray-500 cursor-pointer hover:text-blue-600"
           onClick={() => navigate("/login")}
         >
           Already have an account? Login

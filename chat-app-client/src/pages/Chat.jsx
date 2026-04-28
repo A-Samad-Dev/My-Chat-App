@@ -1,7 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:5000");
+const socket = io("import.meta.env.VITE_API_URL");
+const defaultAvatar =
+  "https://images.ctfassets.net/hrltx12pl8hq/1BfvHwzq7NYKG6dlzPXqnt/18333c93e0a24ae59e04c724d65919cb/Images.jpg?fit=fill&w=384&h=538&fm=webp";
 
 function Chat() {
   const [msg, setMsg] = useState("");
@@ -78,7 +80,7 @@ function Chat() {
       <div className="flex items-center justify-between p-4 text-white bg-blue-600 shadow-lg dark:bg-blue-900">
         <div className="flex items-center gap-3">
           <img
-            src={user?.avatar || "https://via.placeholder.com/40"}
+            src={user?.avatar || defaultAvatar}
             className="object-cover w-10 h-10 border-2 border-white rounded-full dark:border-gray-300"
             alt={user?.username}
           />
@@ -132,7 +134,7 @@ function Chat() {
               {/* Avatar on the left for others */}
               {!isMe && (
                 <img
-                  src={m?.avatar || "https://via.placeholder.com/40"}
+                  src={m?.avatar || defaultAvatar}
                   alt={m.sender}
                   className="object-cover w-8 h-8 rounded-full shadow-md"
                 />
@@ -171,7 +173,7 @@ function Chat() {
               {/* Avatar on the right for me */}
               {isMe && (
                 <img
-                  src={user?.avatar || "https://via.placeholder.com/40"}
+                  src={user?.avatar || defaultAvatar}
                   alt={m.sender}
                   className="object-cover w-8 h-8 rounded-full shadow-md"
                 />

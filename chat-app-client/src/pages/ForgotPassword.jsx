@@ -2,13 +2,13 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { useState } from "react";
-import { useNavigate } from "react-router"; // Add this import
+import { useNavigate } from "react-router";
 
 function ForgotPassword() {
   const [msg, setMsg] = useState("");
-  const [msgType, setMsgType] = useState(""); // Track message type (success/error)
+  const [msgType, setMsgType] = useState("");
   const [loading, setloading] = useState(false);
-  const navigate = useNavigate(); // Add navigation
+  const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: { email: "" },
@@ -24,11 +24,10 @@ function ForgotPassword() {
 
       try {
         const res = await axios.post(
-          "http://localhost:5000/api/auth/forgot-password",
+          `${import.meta.env.VITE_API_URL}/api/auth/forgot-password`,
           values,
         );
 
-        // Handle different response formats
         if (res.data.message) {
           setMsg(res.data.message);
         } else if (typeof res.data === "string") {
@@ -39,14 +38,12 @@ function ForgotPassword() {
 
         setMsgType("success");
 
-        // Optional: Redirect to login after 3 seconds
         setTimeout(() => {
           navigate("/login");
         }, 3000);
       } catch (err) {
         console.error("Forgot password error:", err);
 
-        // Handle different error response formats
         if (err.response?.data?.message) {
           setMsg(err.response.data.message);
         } else if (typeof err.response?.data === "string") {
@@ -113,7 +110,7 @@ function ForgotPassword() {
           {loading ? "Sending..." : "Send Reset Link"}
         </button>
 
-        {/* Add back to login button */}
+      
         <button
           type="button"
           onClick={() => navigate("/login")}
