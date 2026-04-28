@@ -1,4 +1,3 @@
-// pages/Login.jsx
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
@@ -8,6 +7,7 @@ import { useState, useEffect } from "react";
 const Login = () => {
   const navigate = useNavigate();
   const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setloading] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -27,6 +27,9 @@ const Login = () => {
 
     onSubmit: async (values) => {
       try {
+        setloading(true);
+        setErrorMsg("");
+
         const res = await axios.post(
           "http://localhost:5000/api/auth/login",
           values,
@@ -38,27 +41,33 @@ const Login = () => {
         navigate("/chat");
       } catch (err) {
         setErrorMsg("Invalid credentials ❌");
+        values.password = "";
+      } finally {
+        setloading(false);
       }
     },
   });
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600">
+    <div className="flex items-center justify-center h-screen bg-linear-to-br from-blue-500 to-indigo-600">
       <button
-        className="absolute top-0 left-1 text-2xl"
+        className="absolute top-0 text-2xl left-1"
         onClick={() => navigate("/")}
       >
         🏠 Home
       </button>
       <form
+        data-aos="flip-left"
+        data-aos-easing="ease-out-cubic"
+        data-aos-duration="2000"
         onSubmit={formik.handleSubmit}
-        className="bg-white p-8 rounded-2xl shadow-xl w-[90%] max-w-md  dark:bg-black dark:text-white animate-fadeIn"
+        className="bg-white p-8 rounded-2xl shadow-xl w-[90%] max-w-md  dark:bg-black dark:text-white animate-fadeI"
       >
-        <h2 className="text-2xl font-bold text-gray-800  dark:text-white/80 mb-4 text-center">
+        <h2 className="mb-4 text-2xl font-bold text-center text-gray-800 dark:text-white/80">
           Welcome Back 👋
         </h2>
 
-        <small className="text-red-500 block text-center mb-3">
+        <small className="block mb-3 text-center text-red-500">
           {errorMsg}
         </small>
 
@@ -68,13 +77,14 @@ const Login = () => {
             type="email"
             name="email"
             placeholder="Email"
+            disabled={loading}
             onChange={formik.handleChange}
             value={formik.values.email}
             className={`w-full p-3 border rounded-lg outline-none focus:ring-2 
               ${formik.errors.email ? "border-red-400 ring-red-200" : "focus:ring-blue-300"}
             `}
           />
-          <p className="text-red-500 text-xs mt-1">{formik.errors.email}</p>
+          <p className="mt-1 text-xs text-red-500">{formik.errors.email}</p>
         </div>
 
         {/* Password */}
@@ -82,6 +92,7 @@ const Login = () => {
           <input
             type="password"
             name="password"
+            disabled={loading}
             placeholder="Password"
             onChange={formik.handleChange}
             value={formik.values.password}
@@ -89,21 +100,35 @@ const Login = () => {
               ${formik.errors.password ? "border-red-400 ring-red-200" : "focus:ring-blue-300"}
             `}
           />
-          <p className="text-red-500 text-xs mt-1">{formik.errors.password}</p>
+          <p className="mt-1 text-xs text-red-500">{formik.errors.password}</p>
         </div>
 
         <button
           type="submit"
-          className="bg-blue-600 text-white w-full py-3 rounded-lg mt-3 hover:bg-blue-700 transition"
+          disabled={loading}
+          className={`w-full py-3 mt-3 text-white transition rounded-lg ${
+            loading
+              ? "bg-blue-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+          }`}
         >
-          Login
+          {loading ? "processing..." : "login"}
         </button>
 
         <p
-          className="text-center text-sm text-gray-500 mt-4 cursor-pointer hover:text-blue-600"
+          className="mt-4 text-sm text-center text-gray-500 cursor-pointer hover:text-blue-600"
           onClick={() => navigate("/register")}
         >
           Don’t have an account? Sign up
+        </p>
+        <p
+          className="mt-4 text-sm text-center text-blue-300 dark:text-white hover:cursor-pointer dark:hover:text-yellow-400 hover:text-yellow-400"
+          onClick={() => {
+            navigate("/forgot-password");
+          }}
+        >
+          {" "}
+          forgot password? click here
         </p>
       </form>
     </div>

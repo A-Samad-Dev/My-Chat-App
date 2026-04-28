@@ -26,7 +26,7 @@ io.on("connection", (socket) => {
   socket.on("join_room", async (room) => {
     socket.join(room);
 
-    const messages = await Message.find({ room }).sort({ CreatedAT: 1 });
+    const messages = await Message.find({ room });
     socket.emit("chat_history", messages);
   });
 
