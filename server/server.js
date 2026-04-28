@@ -6,7 +6,7 @@ const { Server } = require("socket.io");
 const cors = require("cors");
 
 const connectDB = require("./config/db");
-const Message = require("./models/Message");
+const Message = require("./models/message");
 
 connectDB();
 
