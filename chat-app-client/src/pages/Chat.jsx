@@ -1,15 +1,45 @@
 import { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
+const API = import.meta.env.VITE_API_URL;
 
-const socket = io("import.meta.env.VITE_API_URL");
+const socket = io(API);
 const defaultAvatar =
   "https://images.ctfassets.net/hrltx12pl8hq/1BfvHwzq7NYKG6dlzPXqnt/18333c93e0a24ae59e04c724d65919cb/Images.jpg?fit=fill&w=384&h=538&fm=webp";
+
+const groupMessagesByDate = (messages) => {
+  const groups = {};
+
+  messages.forEach((msg) => {
+    const date = new Date(msg.createdAt);
+
+    const dayKey = date.toDateString();
+
+    if (!groups[dayKey]) {
+      groups[dayKey] = [];
+    }
+
+    groups[dayKey].push(msg);
+  });
+
+  return groups;
+};
+const formatDayLabel = (dateString) => {
+  const today = new Date();
+  const msgDate = new Date(dateString);
+
+  const diffTime = today.setHours(0, 0, 0, 0) - msgDate.setHours(0, 0, 0, 0);
+  const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Yesterday";
+
+  return msgDate.toLocaleDateString();
+};
 
 function Chat() {
   const [msg, setMsg] = useState("");
   const [chat, setChat] = useState([]);
   const [darkMode, setDarkMode] = useState(() => {
-    // Check local storage or system preference
     const savedTheme = localStorage.getItem("theme");
     return (
       savedTheme === "dark" ||
@@ -49,6 +79,12 @@ function Chat() {
       socket.off("chat_history");
     };
   }, []);
+
+  const sortedChat = [...chat].sort(
+    (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+  );
+
+  const groupedMessages = groupMessagesByDate(sortedChat);
 
   const sendMessage = () => {
     if (!msg.trim()) return;
@@ -121,66 +157,80 @@ function Chat() {
             </p>
           </div>
         )}
-        {chat.map((m, index) => {
-          const isMe = m.sender === user?.username;
+        {Object.entries(groupedMessages).map(([date, messages]) => (
+          <div key={date} className="">
+            {/* 🟦 Date Divider */}
+            <div className="sticky flex justify-center my-3  top-1">
+              <span className="px-3 py-1 text-xs text-gray-700 bg-gray-300 rounded-full shadow dark:bg-gray-700 dark:text-gray-200">
+                {formatDayLabel(date)}
+              </span>
+            </div>
 
-          return (
-            <div
-              key={index}
-              className={`flex items-end gap-2 animate-fadeIn ${
-                isMe ? "justify-end" : "justify-start"
-              }`}
-            >
-              {/* Avatar on the left for others */}
-              {!isMe && (
-                <img
-                  src={m?.avatar || defaultAvatar}
-                  alt={m.sender}
-                  className="object-cover w-8 h-8 rounded-full shadow-md"
-                />
-              )}
+            {/* Messages under the date */}
+            {messages.map((m, index) => {
+              const isMe = m.sender === user?.username;
 
-              {/* Message bubble */}
-              <div
-                className={`max-w-xs md:max-w-md px-4 py-2 rounded-2xl shadow-md transition-all duration-200 
-                  ${
-                    isMe
-                      ? "bg-blue-500 dark:bg-blue-600 text-white rounded-br-none"
-                      : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-bl-none"
-                  }`}
-              >
-                {!isMe && (
-                  <p className="mb-1 text-xs font-semibold text-blue-600 dark:text-blue-400">
-                    {m?.sender}
-                  </p>
-                )}
-                <p className="text-sm break-words">{m.text}</p>
-                <span
-                  className={`text-xs block mt-1 ${
-                    isMe
-                      ? "text-blue-100 dark:text-blue-200"
-                      : "text-gray-500 dark:text-gray-400"
+              return (
+                <div
+                  key={index}
+                  className={`flex items-end gap-2 animate-fadeIn ${
+                    isMe ? "justify-end" : "justify-start"
                   }`}
                 >
-                  {m?.createdAt &&
-                    new Date(m?.createdAt).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                </span>
-              </div>
+                  {/* Avatar left */}
+                  {!isMe && (
+                    <img
+                      src={m?.avatar || defaultAvatar}
+                      alt={m.sender}
+                      className="object-cover w-8 h-8 rounded-full shadow-md"
+                    />
+                  )}
 
-              {/* Avatar on the right for me */}
-              {isMe && (
-                <img
-                  src={user?.avatar || defaultAvatar}
-                  alt={m.sender}
-                  className="object-cover w-8 h-8 rounded-full shadow-md"
-                />
-              )}
-            </div>
-          );
-        })}
+                  {/* Message bubble */}
+                  <div
+                    className={`max-w-xs md:max-w-md px-4 py-2 rounded-2xl shadow-md transition-all duration-200 
+            ${
+              isMe
+                ? "bg-blue-500 my-2  dark:bg-blue-600 text-white rounded-br-none"
+                : "bg-white  my-2  dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-bl-none"
+            }`}
+                  >
+                    {!isMe && (
+                      <p className="mb-1 text-xs font-semibold text-blue-600 dark:text-blue-400">
+                        {m?.sender}
+                      </p>
+                    )}
+
+                    <p className="text-sm break-words">{m.text}</p>
+
+                    <span
+                      className={`text-xs block mt-1 ${
+                        isMe
+                          ? "text-blue-100 dark:text-blue-200"
+                          : "text-gray-500 dark:text-gray-400"
+                      }`}
+                    >
+                      {m?.createdAt &&
+                        new Date(m.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                    </span>
+                  </div>
+
+                  {/* Avatar right */}
+                  {isMe && (
+                    <img
+                      src={user?.avatar || defaultAvatar}
+                      alt={m.sender}
+                      className="object-cover w-8 h-8 rounded-full shadow-md"
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ))}
         <div ref={messagesEndRef} />
       </div>
 
